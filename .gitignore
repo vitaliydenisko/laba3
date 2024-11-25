@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+*.swp
+*.orig
+*_BASE_*.cpp
+*_*_*.cpp
+program
