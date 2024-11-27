@@ -1,0 +1,12 @@
+Source: program
+Section: utils
+Priority: optional
+Maintainer: Vitaliy <vip.vitalii125@gmail.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.8
+
+Package: program
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: My program C++
+
