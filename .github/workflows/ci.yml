@@ -1,4 +1,4 @@
-name: C++ Build
+name: Build Debian Package
 
 on: [push, pull_request]
 
@@ -10,12 +10,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up C++ environment
-      run: sudo apt-get install g++ make
+    - name: Install dependencies
+      run: sudo apt-get install build-essential debhelper
 
-    - name: Build program
-      run: make
+    - name: Generate Makefile and build program
+      run: |
+        autoreconf --install
+        ./configure
+        make
 
-    - name: Run tests
-      run: ./program
+    - name: Build Debian package
+      run: dpkg-buildpackage -us -uc
 
