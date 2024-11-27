@@ -1,0 +1,24 @@
+name: Automake Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: sudo apt-get install autoconf automake
+
+    - name: Generate Makefile and build program
+      run: |
+        autoreconf --install
+        ./configure
+        make
+
+    - name: Create tarball
+      run: make dist
+
