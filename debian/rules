@@ -1,12 +1,5 @@
 #!/usr/bin/make -f
 
-# Wrapper script to support debhelper tools
-# Uncomment this to disable the wrapper
-#DEBHELPER#
-
-# Uncomment the following line if you want debhelper to add ${shlibs:Depends} and ${perl:Depends} automatically
-#export DH_OPTIONS
-
 %:
     dh $@
 
