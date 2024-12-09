@@ -13,11 +13,9 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install build-essential debhelper
 
-    - name: Generate Makefile and build program
-      run: |
-        autoreconf --install
-        ./configure
-        make
+    - name: Generate debian/control
+      run: autoreconf --install && ./configure
+        
 
     - name: Build Debian package
       run: dpkg-buildpackage -us -uc
