@@ -1,4 +1,9 @@
+# Основна програма
 bin_PROGRAMS = program
-program_SOURCES = main.cpp funca.cpp
-DEB_BUILD_DEPENDENCIES = debhelper
+program_SOURCES = funca.cpp funca.h main.cpp
+
+# Тестова програма
+check_PROGRAMS = test
+test_SOURCES = test.cpp funca.cpp funca.h
+
 
