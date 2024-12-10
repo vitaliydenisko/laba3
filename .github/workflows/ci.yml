@@ -15,7 +15,9 @@ jobs:
 
     - name: Generate debian/control
       run: autoreconf --install && ./configure
-        
+
+    - name: Run clean step
+      run: fakeroot debian/rules clean
 
     - name: Build Debian package
       run: dpkg-buildpackage -us -uc
