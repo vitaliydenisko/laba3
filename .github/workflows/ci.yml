@@ -17,5 +17,5 @@ jobs:
       run: autoreconf --install && ./configure
 
     - name: Build Debian package
-      run: dpkg-buildpackage -us -uc
+      run: dpkg-buildpackage -us -uc -nc
 
