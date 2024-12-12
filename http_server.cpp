@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
-#include "funca.h" // Ваш клас для тригонометричних функцій
+#include "funca.h"// Ваш клас для тригонометричних функці�
 #include "funca.cpp"
 #include "httplib.h" // HTTP бібліотека, наприклад, https://github.com/yhirose/cpp-httplib
 
