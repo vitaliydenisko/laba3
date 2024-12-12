@@ -1,61 +1,59 @@
-name: Build and Push Multi-Arch Docker Image
+name: Build and Push Multi-Arch Docker Image 
 
 on:
   push:
     branches:
       - branchHTTPservMutli
       - branchHTTPserver
+  pull_request:
+    branches:
+      - branchHTTPservMutli
+      - branchHTTPserver
+  workflow_dispatch:
 
 jobs:
-  build-and-push:
+  build:
+
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        platform: [amd64, arm64]
+
     steps:
-      #  Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-      # Set up QEMU for ARM support
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
+    # Встановлюємо QEMU для багатоплатформової збірки
+    - name: QEMU install
+      uses: docker/setup-qemu-action@v3
 
-            #  Set up Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          install: true
+    # Налаштовуємо Buildx
+    - name: Install Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-      # Login to Docker Hub
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    # Створюємо Buildx builder
+    - name: Create and use buildx builder
+      run: docker buildx create --use --name multiarch-builder
 
-            # Build and push multi-arch Docker image for amd64
-      - name: Build and push Docker image for amd64
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/amd64
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/http_server:amd64
+    # Перевіряємо Buildx
+    - name: buildx ls
+      run: docker buildx ls
 
-      # Build and push multi-arch Docker image for arm64
-      - name: Build and push Docker image for arm64
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          platforms: linux/arm64
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/http_server:arm64
+    # Логін у Docker Hub
+    - name: Log in to Docker Hub
+      run: docker login -u ${{ vars.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
 
-            # Create manifest for multi-architecture image
-      - name: Create manifest for multi-architecture image
-        run: |
-          manifest-tool push from-args --platforms linux/amd64,linux/arm64 --template-v1 http_server:amd64 --template-v2 ${{ secrets.DOCKER_USERNAME }}/http_server:latest
+    # Збірка та пуш для amd64
+    - name: Build Docker image for amd64
+      run: docker buildx build --platform=linux/amd64 -t ${{ vars.DOCKER_USERNAME }}/http_server:amd64 --push .
+
+    # Збірка та пуш для arm64
+    - name: Build Docker image for arm64
+      run: docker buildx build --platform=linux/arm64 -t ${{ vars.DOCKER_USERNAME }}/http_server:arm64 --push .
+
+    # Створення маніфесту
+    - name: Create manifest
+      run: docker manifest create ${{ vars.DOCKER_USERNAME }}/http_server:latest \
+           --amend ${{ vars.DOCKER_USERNAME }}/http_server:amd64 \
+           --amend ${{ vars.DOCKER_USERNAME }}/http_server:arm64
+
+    # Пуш маніфесту
+    - name: Push manifest to Docker Hub
+      run: docker manifest push ${{ vars.DOCKER_USERNAME }}/http_server:latest
 
